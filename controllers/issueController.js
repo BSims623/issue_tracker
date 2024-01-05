@@ -1,18 +1,34 @@
 const mongoose = require('mongoose')
-const Issue = require('../models/IssueModel.js')
+const { Issue } = require('../models/IssueModel.js')
+const { Project } = require('../models/IssueModel.js')
 const { StatusCodes } = require('http-status-codes')
 
-
 const getAllIssues = async (req, res) => {
-    const allIssues = await Issue.find(req.query)
+    let projectName = req.params.project;
+    if (!projectName) return res.status(StatusCodes.OK).send('not found')
+    const projectIssues = await Project.findOne({ project: projectName })
+        .populate({
+            path: 'children',
+            match: req.query
+        })
+    const allIssues = projectIssues ? projectIssues.children : [];
     res.status(StatusCodes.OK).json(allIssues)
 };
 
 const addNewIssue = async (req, res) => {
-    let project = req.params.project;
+    // handle Project
+    const projectName = req.params.project;
+    const isProject = await Project.findOne({ project: projectName })
+    let project;
+    if (!isProject) project = await Project.create({ project: projectName })
+    else project = isProject;
+    // handle new Issue
     const { issue_title, issue_text, created_by } = req.body;
     if (!issue_title || !issue_text || !created_by) return res.status(StatusCodes.OK).json({ error: "required field(s) missing" })
     const newIssue = await Issue.create(req.body);
+    project.children.push(newIssue._id);
+    const updatedProject = await Project.findOneAndUpdate({ project: projectName }, project);
+
     res.status(StatusCodes.OK).json(newIssue);
 };
 

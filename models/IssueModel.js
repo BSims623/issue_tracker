@@ -1,8 +1,14 @@
 const mongoose = require("mongoose");
 
 const IssueSchema = new mongoose.Schema({
-    issue_title: String,
-    issue_text: String,
+    issue_title: {
+        type: String,
+        required: true
+    },
+    issue_text: {
+        type: String,
+        required: true
+    },
     created_on: {
         type: Date,
         default: Date.now
@@ -11,13 +17,31 @@ const IssueSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    created_by: String,
-    assigned_to: String,
+    created_by: {
+        type: String,
+        required: true
+    },
+    assigned_to: {
+        type: String,
+        default: "",
+    },
     open: {
         type: Boolean,
         default: true
     },
-    status_text: String
+    status_text: {
+        type: String,
+        default: "",
+    }
 });
 
-module.exports = mongoose.model('Issue', IssueSchema);
+const Issue = mongoose.model('Issue', IssueSchema);
+
+const ProjectSchema = new mongoose.Schema({
+    project: String,
+    children: [{ type: mongoose.Schema.Types.ObjectId, ref: Issue }],
+})
+
+const Project = mongoose.model('Project', ProjectSchema);
+
+module.exports = { Issue, Project };

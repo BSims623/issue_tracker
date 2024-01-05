@@ -85,7 +85,7 @@ suite('Functional Tests', function () {
     });
     test("Update one field on an issue: PUT request to /api/issues/{project}", function (done) {
         const requestData = {
-            _id: "6595e9491ff526aee3d70fd0",
+            _id: deleteThisUser._id,
             issue_title: "Bob's Post Issue",
         }
         chai
@@ -95,14 +95,14 @@ suite('Functional Tests', function () {
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.deepEqual(res.body, {
-                    "result": "successfully updated", "_id": "6595e9491ff526aee3d70fd0"
+                    "result": "successfully updated", "_id": deleteThisUser._id
                 });
                 done();
             });
     });
     test("Update multiple fields on an issue: PUT request to /api/issues/{project}", function (done) {
         const requestData = {
-            _id: "6595e9491ff526aee3d70fd0",
+            _id: deleteThisUser._id,
             issue_title: "Still Bob's Post Issue",
             created_by: "Bob"
         }
@@ -113,7 +113,7 @@ suite('Functional Tests', function () {
             .end(function (err, res) {
                 assert.equal(res.status, 200);
                 assert.deepEqual(res.body, {
-                    "result": "successfully updated", "_id": "6595e9491ff526aee3d70fd0"
+                    "result": "successfully updated", "_id": deleteThisUser._id
                 });
                 done();
             });
